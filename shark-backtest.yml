@@ -1,0 +1,51 @@
+name: Shark Supertrend 14/3 - FAST AUTO Backtest
+
+on:
+  workflow_dispatch:
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run automatic backtest
+        env:
+          SHARK_BASE_URL: https://api.sharkexchange.in
+          MARKET: USDT
+          SYMBOLS: ALL
+          TIMEFRAME: 5m
+          ATR_PERIOD: 14
+          ATR_MULTIPLIER: 3
+          MARGIN_INR: 100
+          LEVERAGE: 10
+          PRICE_TYPE: MARK_PRICE
+          AUTO_CANDLES: 864
+          REQUEST_SLEEP: 1.05
+          STARTING_CAPITAL_INR: 1000
+          INCLUDE_FEES: 'false'
+          SLIPPAGE_BPS: 0
+        run: python backtest_portfolio.py
+
+      - name: Upload backtest results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shark-backtest-results
+          path: |
+            backtest_trades.csv
+            backtest_equity.csv
+            backtest_summary.json
+            backtest_summary.txt
+          if-no-files-found: warn

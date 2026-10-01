@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+cache/
+backtest_trades.csv
+backtest_equity.csv
+backtest_summary.json
+backtest_summary.txt
